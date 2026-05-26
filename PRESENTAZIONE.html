@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Mirror | Project - Modello Noleggio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: #f0f0f0;
+            line-height: 1.6;
+        }
+
+        .slides-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 50px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            border-color: rgba(100, 255, 218, 0.3);
+        }
+
+        .slide-number {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 0.8rem;
+            color: rgba(100, 255, 218, 0.5);
+            font-family: monospace;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, #fff, #64ffda, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: #64ffda;
+            margin-bottom: 25px;
+            display: inline-block;
+            border-bottom: 3px solid #64ffda;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            color: #fff;
+            margin: 25px 0 15px 0;
+        }
+
+        .highlight {
+            color: #64ffda;
+            font-weight: bold;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .info-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-card:hover {
+            background: rgba(100, 255, 218, 0.1);
+            border-color: rgba(100, 255, 218, 0.3);
+        }
+
+        .info-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .big-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #64ffda;
+            line-height: 1;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table th {
+            color: #64ffda;
+            font-size: 1rem;
+        }
+
+        .win-badge {
+            background: #7ed321;
+            color: #1a1a2e;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .loss-badge {
+            background: rgba(255, 107, 107, 0.3);
+            color: #ff6b6b;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+
+        .quote {
+            font-size: 1rem;
+            font-style: italic;
+            border-left: 4px solid #64ffda;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #ddd;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #64ffda, #4a90e2);
+            color: #1a1a2e;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: transform 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+        }
+
+        .roi-positive {
+            color: #7ed321;
+            font-weight: bold;
+        }
+
+        .profit-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+        }
+
+        .profit-table th, .profit-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profit-table th {
+            background: rgba(100, 255, 218, 0.2);
+            color: #64ffda;
+        }
+
+        .profit-positive {
+            color: #7ed321;
+            font-weight: bold;
+        }
+
+        .profit-negative {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .investment-card ul {
+            list-style-type: none;
+        }
+
+        .investment-card {
+            background: linear-gradient(135deg, rgba(100, 255, 218, 0.1), rgba(255, 107, 107, 0.1));
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .badge-ext {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .badge-int {
+            background: #64ffda;
+            color: #1a1a2e;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        @media (max-width: 900px) {
+            .slide { padding: 30px; }
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 1.5rem; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 15px; }
+            .profit-table { font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="slides-container">
+        
+        <!-- SLIDE 1 - COPERTINA -->
+        <div class="slide">
+            <div class="slide-number">1/17</div>
+            <div style="text-align: center; min-height: 60vh; display: flex; flex-direction: column; justify-content: center;">
+                <div style="font-size: 4rem; margin-bottom: 20px;">🪞</div>
+                <h1>Smart Mirror - Project</h1>
+                <p style="font-size: 1.3rem; color: #ccc; margin-bottom: 30px;">Piano del Progetto</p>
+                <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 30px;">
+                    <div><span class="highlight">📅</span> Launch: Ottobre 2026</div>
+                    <div><span class="highlight">💰</span> Modello: Noleggio SaaS</div>
+                    <div><span class="highlight">📈</span> Investimento: € 280.000</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2 - PERCHÉ IL NOLEGGIO È MEGLIO -->
+        <div class="slide">
+            <div class="slide-number">2/17</div>
+            <h2>🤔 Perché il Noleggio è meglio dell'Acquisto?</h2>
+            <div class="quote">"Nel retail moderno, i clienti non vogliono comprare hardware. Vogliono un servizio che funzioni, senza investimenti iniziali."</div>
+            <div class="grid-2">
+                <div class="info-card">
+                    <div class="icon">❌</div>
+                    <h4>Vendita Diretta<br>(modello tradizionale)</h4>
+                    <ul style="text-align: left; margin-top: 15px; list-style: none;">
+                        <li>💰 <strong>Alto investimento iniziale</strong><br><small>Cliente: € 11.000+ subito</small></li>
+                        <li>📉 <strong>Ricavo una tantum</strong><br><small>Dopo la vendita, il rapporto finisce</small></li>
+                        <li>🔧 <strong>Manutenzione a carico del cliente</strong></li>
+                        <li>📉 <strong>Valore aziendale basso (2-3x ARR)</strong></li>
+                    </ul>
+                </div>
+                <div class="info-card" style="border: 2px solid #64ffda;">
+                    <div class="icon">✅</div>
+                    <h4>Noleggio / SaaS<br><span class="win-badge">MODELLO VINCENTE</span></h4>
+                    <ul style="text-align: left; margin-top: 15px; list-style: none;">
+                        <li>💳 <strong>Investimento zero per il cliente</strong><br><small>Cliente: da € 600/mese</small></li>
+                        <li>📈 <strong>Ricavi ricorrenti (MRR/ARR)</strong><br><small>Fatturiamo ogni mese, per anni</small></li>
+                        <li>🔧 <strong>Controllo totale del prodotto</strong></li>
+                        <li>📈 <strong>Valore aziendale alto (5-10x ARR)</strong></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="quote">"Un modello SaaS vale molto di più della semplice vendita di hardware, a parità di ricavi."</div>
+        </div>
+
+        <!-- SLIDE 3 - TREND DI MERCATO -->
+        <div class="slide">
+            <div class="slide-number">3/17</div>
+            <h2>📊 Trend di Mercato: Il SaaS sta vincendo</h2>
+            <div class="grid-3">
+                <div class="info-card">
+                    <div class="big-number">€ 21.69B</div>
+                    <div>Mercato Smart Mirror nel 2034</div>
+                    <small>CAGR 17.27%</small>
+                </div>
+                <div class="info-card">
+                    <div class="big-number">29.4%</div>
+                    <div>CAGR Smart Display Market</div>
+                    <small>Fonte: GII Research 2026</small>
+                </div>
+                <div class="info-card">
+                    <div class="big-number">87%</div>
+                    <div>dei retailer preferisce il noleggio</div>
+                    <small>Fonte: Deloitte 2025</small>
+                </div>
+            </div>
+            <div class="quote">"I competitor di successo (Mirror Experience, Bweez) usano già il modello di noleggio."</div>
+        </div>
+
+        <!-- SLIDE 4 - VANTAGGI PER IL CLIENTE RETAIL -->
+        <div class="slide">
+            <div class="slide-number">4/17</div>
+            <h2>🏪 Vantaggi per il Cliente (Retailer)</h2>
+            <div class="grid-2">
+                <div class="info-card">
+                    <div class="icon">💰</div>
+                    <h4>Zero Capex</h4>
+                    <p>Nessun investimento iniziale. Pagamento mensile come costo operativo (OPEX).</p>
+                    <div class="win-badge" style="margin-top: 10px;">✓ Approvazione budget in giorni, non mesi</div>
+                </div>
+                <div class="info-card">
+                    <div class="icon">🔄</div>
+                    <h4>Sempre aggiornato</h4>
+                    <p>Aggiornamenti software e miglioramenti AI inclusi nel canone.</p>
+                </div>
+                <div class="info-card">
+                    <div class="icon">🛡️</div>
+                    <h4>Manutenzione inclusa</h4>
+                    <p>Assistenza, riparazioni e sostituzioni hardware a nostro carico.</p>
+                </div>
+                <div class="info-card">
+                    <div class="icon">📈</div>
+                    <h4>Rischio zero</h4>
+                    <p>Se non funziona, il cliente smette di pagare.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5 - COSTI ONE-TIME (SVILUPPO INTERNO) -->
+        <div class="slide">
+            <div class="slide-number">5/17</div>
+            <h2>💰 COSTI ONE-TIME <span class="badge badge-int">Sviluppo Interno</span></h2>
+            <p style="margin-bottom: 15px;">Basati su stipendi medi italiani 2026</p>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr style="border-bottom: 2px solid #64ffda;">
+                        <th>Ruolo</th>
+                        <th>Costo</th>
+                </thead>
+                <tbody>
+                    <tr><td class="roi-positive">Sviluppatore Backend</td><td>€ 11.200</td> </tr>
+                    <tr><td class="roi-positive">Sviluppatore Frontend</td><td>€ 11.200</td> </tr>
+                    <tr><td class="roi-positive">AI/Computer Vision Specialist</td><td>€ 11.200</td> </tr>
+                    </tr><td class="roi-positive">UI/UX Designer</td><td>€ 5.600</td> </tr>
+                    <tr><td class="roi-positive">Project Manager</td><td>€ 7.000</td> </tr>
+                    <tr style="border-top: 2px solid #64ffda;"><td><strong>TOTALE SVILUPPO</strong></td><td><strong>€ 46.200</strong></td> </tr>
+                </tbody>
+            </table>
+
+            <div class="investment-card">
+                <h3>➕ Costi Aggiuntivi One-Time</h3>
+                <table class="comparison-table">
+                    <tr><td class="roi-positive">Licenze SDK commerciali</td><td>€ 5.000</td> </tr>
+                    <tr><td class="roi-positive">Cloud/backend (primo anno)</td><td>€ 2.000</td> </tr>
+                    <tr><td class="roi-positive">Testing e iterazioni</td><td>€ 16.800</td> </tr>
+                    <tr><td class="roi-positive">Consulenza GDPR</td><td>€ 3.000</td> </tr>
+                    <tr><td class="roi-positive">Materiale promozionale</td><td>€ 2.000</td> </tr>
+                    <tr style="border-top: 2px solid #64ffda;"><td><strong>TOTALE ONE-TIME</strong></td><td><strong>€ 75.000</strong></td> </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- SLIDE 6 - COSTI PER STORE (MODELLO) -->
+        <div class="slide">
+            <div class="slide-number">6/17</div>
+            <h2>💰 COSTI PER STORE</h2>
+            
+            <div class="grid-2">
+                <div>
+                    <h3>📌 Hardware <span class="badge badge-ext">Esterno</span></h3>
+                    <table class="comparison-table">
+                        <tr><td class="roi-positive">Display touch 55"</td><td>€ 2.500</td> </tr>
+                        <tr><td class="roi-positive">Unità di calcolo</td><td>€ 150</td> </tr>
+                        <tr><td class="roi-positive">Camera RGB/depth</td><td>€ 300</td> </tr>
+                        <tr><td class="roi-positive">Microfono + speaker</td><td>€ 100</td> </tr>
+                        <tr><td class="roi-positive">Sensori prossimità/luce</td><td>€ 50</td> </tr>
+                        <tr><td class="roi-positive">Struttura/frame</td><td>€ 400</td> </tr>
+                        <tr><td class="roi-positive">Cablaggio</td><td>€ 100</td> </tr>
+                        <tr style="border-top: 2px solid #64ffda;"><td><strong>TOTALE HARDWARE</strong></td><td><strong>€ 3.600</strong></td> </tr>
+                    </table>
+                </div>
+                <div>
+                    <h3>📌 Servizi <span class="badge badge-int">Interno</span></h3>
+                    <table class="comparison-table">
+                        <tr><td class="roi-positive">Assemblaggio hardware</td><td>€ 560</td> </tr>
+                        <tr><td class="roi-positive">Installazione in store</td><td>€ 280</td> </tr>
+                        <tr style="border-top: 2px solid #64ffda;"><td><strong>TOTALE SERVIZI</strong></td><td><strong>€ 840</strong></td> </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="investment-card">
+                <p class="roi-positive">💡 <strong>TOTALE primo anno per store:</strong> € 3.600 + € 840 = <strong>€ 4.440</strong></p>
+                <p>💡 <strong>Formazione personale store:</strong> inclusa nel canone di noleggio</p>
+            </div>
+        </div>
+
+        <!-- SLIDE 7 - COSTI OPERATIVI FISSI ANNUALI -->
+        <div class="slide">
+            <div class="slide-number">7/17</div>
+            <h2>💰 COSTI OPERATIVI FISSI ANNUALI</h2>
+            <div class="investment-card">
+                <table class="comparison-table">
+                    <tr><td class="roi-positive">Manutenzione software</td><td>€ 15.000</td> </tr>
+                    <tr><td class="roi-positive">Supporto tecnico</td><td>€ 8.000</td> </tr>
+                    <tr><td class="roi-positive">Cloud + licenze</td><td>€ 2.000</td> </tr>
+                    <tr style="border-top: 2px solid #64ffda;"><td><strong>TOTALE OPERATIVI FISSI</strong></td><td><strong>€ 25.000/anno</strong></td> </tr>
+                </table>
+                <p class="roi-positive" style="margin-top: 10px;">💡 Questi costi NON dipendono dal numero di store. Sono costi aziendali fissi.</p>
+            </div>
+        </div>
+
+        <!-- SLIDE 8 - COSTI MENSILI DETTAGLIATI (PERCHÉ 150k NON BASTANO) -->
+        <div class="slide">
+            <div class="slide-number">8/17</div>
+            <h2>⚠️ COSTI MENSILI: perché € 150.000 NON bastano</h2>
+            
+            <div class="investment-card">
+                <h3>📊 Costi mensili reali del progetto</h3>
+                <table class="profit-table">
+                    <tr><th>Voce</th><th>Costo mensile</th><th>Calcolo</th> </tr>
+                    <tr><td class="roi-positive">Costi operativi fissi</td><td>€ 2.083</td><td>€ 25.000 ÷ 12</td> </tr>
+                    <tr><td class="roi-positive">Marketing e vendite</td><td>€ 2.000</td><td>Minimo per acquisire clienti</td> </tr>
+                    <tr><td class="roi-positive">Costi di gestione</td><td>€ 1.500</td><td>Amministrazione, legali, spese</td> </tr>
+                    <tr style="border-top: 2px solid #64ffda;"> <td><strong>TOTALE COSTI MENSILI FISSI</strong></td><td><strong>€ 5.583</strong></td><td></td> </tr>
+                </table>
+            </div>
+
+            <div class="quote">
+                💡 <strong>Attenzione:</strong> Questi costi vanno pagati OGNI MESE, indipendentemente dal numero di store attivi.
+            </div>
+
+            <div class="grid-2" style="margin-top: 20px;">
+                <div>
+                    <h3>📌 Con € 150.000 (mese 0)</h3>
+                    <table class="profit-table">
+                        <tr><th>Voce</th><th>Importo</th> </tr>
+                        <tr><td>Investimento ricevuto</td><td class="profit-positive">+€ 150.000</td> </tr>
+                        <tr><td>Sviluppo software</td><td class="profit-negative">-€ 75.000</td> </tr>
+                        <tr><td>HW + assemblaggio (10 store)</td><td class="profit-negative">-€ 44.400</td> </tr>
+                        <tr style="border-top: 1px solid #64ffda;"> <td><strong>Residuo dopo mese 0</strong></td><td><strong>€ 30.600</strong></td> </tr>
+                    </table>
+                </div>
+                <div>
+                    <h3>📌 Flusso di cassa mensile</h3>
+                    <table class="profit-table">
+                        <tr><th>Voce</th><th>Importo</th> </tr>
+                        <tr><td>Costi mensili fissi</td><td class="profit-negative">-€ 5.583</td> </tr>
+                        <tr><td>Ricavi (10 store)</td><td class="profit-positive">+€ 6.000</td> </tr>
+                        <tr style="border-top: 1px solid #64ffda;"> <td><strong>Flusso cassa mensile</strong></td><td><strong>+€ 417</strong></td> </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 9 - PERCHÉ 150k DURANO SOLO 12 MESI (CALCOLO DETTAGLIATO) -->
+        <div class="slide">
+            <div class="slide-number">9/17</div>
+            <h2>🧮 Dimostrazione matematica: € 150k durano 12 mesi</h2>
+            
+            <table class="profit-table">
+                <tr><th>Mese</th><th>Costi mensili</th><th>Ricavi mensili</th><th>Flusso cassa</th><th>Residuo cumulato</th> </tr>
+                <tr><td class="roi-positive">Mese 0</td><td>€ 119.400</td><td>€ 0</td><td class="profit-negative">-€ 119.400</td><td>€ 30.600</td> </tr>
+                <tr><td class="roi-positive">Mese 1</td><td>€ 5.583</td><td>€ 6.000</td><td class="profit-positive">+€ 417</td><td>€ 31.017</td> </tr>
+                <tr><td class="roi-positive">Mese 2</td><td>€ 5.583</td><td>€ 6.000</td><td class="profit-positive">+€ 417</td><td>€ 31.434</td> </tr>
+                <tr><td class="roi-positive">Mese 3</td><td>€ 5.583</td><td>€ 6.000</td><td class="profit-positive">+€ 417</td><td>€ 31.851</td> </tr>
+                <tr><td class="roi-positive">Mese 4</td><td>€ 5.583</td><td>€ 6.000</td><td class="profit-positive">+€ 417</td><td>€ 32.268</td> </tr>
+                <tr><td class="roi-positive">Mese 5</td><td>€ 5.583</td><td>€ 6.000</td><td class="profit-positive">+€ 417</td><td>€ 32.685</td> </tr>
+                <tr><td class="roi-positive">Mese 6</td><td>€ 5.583</td><td>€ 6.000</td><td class="profit-positive">+€ 417</td><td>€ 33.102</td> </tr>
+                <tr><td class="roi-positive">Mese 7</td><td>€ 5.583</td><td>€ 6.000</td><td class="profit-positive">+€ 417</td><td>€ 33.519</td> </tr>
+                <tr><td class="roi-positive">Mese 8</td><td>€ 5.583</td><td>€ 6.000</td><td class="profit-positive">+€ 417</td><td>€ 33.936</td> </tr>
+                <tr><td class="roi-positive">Mese 9</td><td>€ 5.583</td><td>€ 6.000</td><td class="profit-positive">+€ 417</td><td>€ 34.353</td> </tr>
+                <tr><td class="roi-positive">Mese 10</td><td>€ 5.583</td><td>€ 6.000</td><td class="profit-positive">+€ 417</td><td>€ 34.770</td> </tr>
+                <tr><td class="roi-positive">Mese 11</td><td>€ 5.583</td><td>€ 6.000</td><td class="profit-positive">+€ 417</td><td>€ 35.187</td> </tr>
+                <tr><td class="roi-positive">Mese 12</td><td>€ 5.583</td><td>€ 6.000</td><td class="profit-positive">+€ 417</td><td>€ 35.604</td> </tr>
+            </table>
+
+            <div class="quote" style="margin-top: 15px;">
+                🔴 <strong>Il problema:</strong> Per crescere da 10 a 20 store servono <strong>€ 64.400</strong> (hardware, assemblaggio, marketing).<br>
+                Con solo <strong>€ 35.600</strong> di residuo dopo 12 mesi, <strong>NON È POSSIBILE CRESCERE</strong>.
+            </div>
+        </div>
+
+        <!-- SLIDE 10 - PERCHÉ SERVE € 280.000 (DETTAGLIO COMPLETO) -->
+        <div class="slide">
+            <div class="slide-number">10/17</div>
+            <h2>💰 Perché chiediamo € 280.000</h2>
+            
+            <div class="quote">
+                "L'investimento non è un costo. È il carburante per arrivare al break-even e crescere."
+            </div>
+
+            <div class="grid-2">
+                <div>
+                    <h3>📌 Dove vanno i € 280.000</h3>
+                    <table class="comparison-table">
+                        <tr><th>Voce</th><th>Costo</th><th>Perché</th> </tr>
+                        <tr><td class="roi-positive">Sviluppo software</td><td>€ 75.000</td><td>Una tantum, vale per tutti gli store</td> </tr>
+                        <tr><td class="roi-positive">HW + installaz. (10 store)</td><td>€ 44.400</td><td>Base critica iniziale</td> </tr>
+                        <tr><td class="roi-positive">Costi operativi (24 mesi)</td><td>€ 50.000</td><td>€ 25.000 × 2 anni</td> </tr>
+                        <tr><td class="roi-positive">Marketing (24 mesi)</td><td>€ 48.000</td><td>€ 2.000 × 24 mesi</td> </tr>
+                        <tr><td class="roi-positive">Costi gestione (24 mesi)</td><td>€ 36.000</td><td>€ 1.500 × 24 mesi</td> </tr>
+                        <tr><td class="roi-positive">Fondo imprevisti</td><td>€ 30.000</td><td>Buffer di sicurezza</td> </tr>
+                        <tr style="border-top:2px solid #64ffda;background:rgba(100,255,218,0.1);">
+                            <td><strong>TOTALE</strong></td><td><strong>€ 283.400</strong></td><td>≈ € 280.000</td>
+                         </tr>
+                    </table>
+                </div>
+                <div>
+                    <h3>📌 Confronto scenari</h3>
+                    <table class="comparison-table">
+                        <tr><th>Investimento</th><th>Cosa permette</th><th>Durata</th> </tr>
+                        <tr><td class="loss-badge">€ 75.000</td><td>Solo sviluppo. Nessuno store.</td><td>Il progetto non parte</td> </tr>
+                        <tr><td class="loss-badge">€ 150.000</td><td>Sviluppo + 10 store</td><td>12 mesi, poi finisce</td> </tr>
+                        <tr><td class="win-badge">€ 280.000</td><td>Sviluppo + 10 store + 2 anni operativi</td><td>24+ mesi, progetto autonomo</td> </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 11 - PIANI DI ABBONAMENTO -->
+        <div class="slide">
+            <div class="slide-number">11/17</div>
+            <h2>📈 Piani di Abbonamento</h2>
+            <div class="grid-2">
+                <div class="info-card" style="border: 2px solid #64ffda;">
+                    <div class="icon">⭐</div>
+                    <h4>Piano Standard</h4>
+                    <div class="big-number">€ 600</div>
+                    <div>/mese per store</div>
+                    <p>HW + SW + supporto</p>
+                    <p class="roi-positive">€ 7.200/anno per store</p>
+                </div>
+                <div class="info-card">
+                    <div class="icon">👑</div>
+                    <h4>Piano Premium</h4>
+                    <div class="big-number">€ 800</div>
+                    <div>/mese per store</div>
+                    <p>HW + SW + supporto + Analytics</p>
+                    <p class="roi-positive">€ 9.600/anno per store</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 12 - PIANO STANDARD: SCENARIO 20 STORE -->
+        <div class="slide">
+            <div class="slide-number">12/17</div>
+            <h2>📊 PIANO STANDARD - 20 store</h2>
+            <p><small>Anno 1: 10 store | Anno 2: 20 store | Anno 3: 20 store</small></p>
+            <table class="profit-table">
+                <tr><th>Voce</th><th>Anno 1</th><th>Anno 2</th><th>Anno 3</th><th>TOTALE</th> </tr>
+                <tr><td class="roi-positive">RICAVI LORDI</td><td>€ 72.000</td><td>€ 144.000</td><td>€ 144.000</td><td>€ 360.000</td> </tr>
+                <tr><td class="roi-positive">Costi operativi fissi</td><td>-€ 25.000</td><td>-€ 25.000</td><td>-€ 25.000</td><td>-€ 75.000</td> </tr>
+                <tr><td class="roi-positive">HW + servizi</td><td>-€ 44.400</td><td>-€ 44.400</td><td>€ 0</td><td>-€ 88.800</td> </tr>
+                <tr><td class="roi-positive">Sviluppo one-time</td><td>-€ 75.000</td><td>€ 0</td><td>€ 0</td><td>-€ 75.000</td> </tr>
+                <tr style="border-top:2px solid #64ffda;"><td class="roi-positive"><strong>UTILE NETTO</strong></td><td class="profit-negative"><strong>-€ 72.400</strong></td><td class="profit-positive"><strong>+€ 74.600</strong></td><td class="profit-positive"><strong>+€ 119.000</strong></td><td class="profit-positive"><strong>+€ 121.200</strong></td> </tr>
+            </table>
+            <div class="quote">✅ ROI a 36 mesi: <strong class="roi-positive">+167%</strong> | Break-even: 18 mesi</div>
+        </div>
+
+        <!-- SLIDE 13 - PIANO STANDARD: SCENARIO 50 STORE -->
+        <div class="slide">
+            <div class="slide-number">13/17</div>
+            <h2>📊 PIANO STANDARD - 50 store</h2>
+            <p><small>Anno 1: 10 store | Anno 2: 30 store | Anno 3: 50 store</small></p>
+            <table class="profit-table">
+                <tr><th>Voce</th><th>Anno 1</th><th>Anno 2</th><th>Anno 3</th><th>TOTALE</th> </tr>
+                <tr><td class="roi-positive">RICAVI LORDI</td><td>€ 72.000</td><td>€ 216.000</td><td>€ 360.000</td><td>€ 648.000</td> </tr>
+                <tr><td class="roi-positive">Costi operativi fissi</td><td>-€ 25.000</td><td>-€ 25.000</td><td>-€ 25.000</td><td>-€ 75.000</td> </tr>
+                <tr><td class="roi-positive">HW + servizi</td><td>-€ 44.400</td><td>-€ 88.800</td><td>-€ 88.800</td><td>-€ 222.000</td> </tr>
+                <tr><td class="roi-positive">Sviluppo one-time</td><td>-€ 75.000</td><td>€ 0</td><td>€ 0</td><td>-€ 75.000</td> </tr>
+                <tr style="border-top:2px solid #64ffaa;"><td class="roi-positive"><strong>UTILE NETTO</strong></td><td class="profit-negative"><strong>-€ 72.400</strong></td><td class="profit-positive"><strong>+€ 102.200</strong></td><td class="profit-positive"><strong>+€ 246.200</strong></td><td class="profit-positive"><strong>+€ 276.000</strong></td> </tr>
+            </table>
+            <div class="quote">✅ ROI a 36 mesi: <strong class="roi-positive">+346%</strong> | Break-even: 14 mesi</div>
+        </div>
+
+        <!-- SLIDE 14 - PIANO PREMIUM: SCENARIO 20 STORE -->
+        <div class="slide">
+            <div class="slide-number">14/17</div>
+            <h2>📊 PIANO PREMIUM - 20 store</h2>
+            <p><small>Anno 1: 10 store | Anno 2: 20 store | Anno 3: 20 store</small></p>
+            <table class="profit-table">
+                <tr><th>Voce</th><th>Anno 1</th><th>Anno 2</th><th>Anno 3</th><th>TOTALE</th> </tr>
+                <tr><td class="roi-positive">RICAVI LORDI</td><td>€ 96.000</td><td>€ 192.000</td><td>€ 192.000</td><td>€ 480.000</td> </tr>
+                <tr><td class="roi-positive">Costi operativi fissi</td><td>-€ 25.000</td><td>-€ 25.000</td><td>-€ 25.000</td><td>-€ 75.000</td> </tr>
+                <tr><td class="roi-positive">HW + servizi</td><td>-€ 44.400</td><td>-€ 44.400</td><td>€ 0</td><td>-€ 88.800</td> </tr>
+                <tr><td class="roi-positive">Sviluppo one-time</td><td>-€ 75.000</td><td>€ 0</td><td>€ 0</td><td>-€ 75.000</td> </tr>
+                <tr style="border-top:2px solid #64ffaa;"><td class="roi-positive"><strong>UTILE NETTO</strong></td><td class="profit-negative"><strong>-€ 48.400</strong></td><td class="profit-positive"><strong>+€ 122.600</strong></td><td class="profit-positive"><strong>+€ 167.000</strong></td><td class="profit-positive"><strong>+€ 241.200</strong></td> </tr>
+            </table>
+            <div class="quote">✅ ROI a 36 mesi: <strong class="roi-positive">+432%</strong> | Break-even: 12 mesi</div>
+        </div>
+
+        <!-- SLIDE 15 - PIANO PREMIUM: SCENARIO 50 STORE -->
+        <div class="slide">
+            <div class="slide-number">15/17</div>
+            <h2>📊 PIANO PREMIUM - 50 store</h2>
+            <p><small>Anno 1: 10 store | Anno 2: 30 store | Anno 3: 50 store</small></p>
+            <table class="profit-table">
+                <tr><th>Voce</th><th>Anno 1</th><th>Anno 2</th><th>Anno 3</th><th>TOTALE</th> </tr>
+                <tr><td class="roi-positive">RICAVI LORDI</td><td>€ 96.000</td><td>€ 288.000</td><td>€ 480.000</td><td>€ 864.000</td> </tr>
+                <tr><td class="roi-positive">Costi operativi fissi</td><td>-€ 25.000</td><td>-€ 25.000</td><td>-€ 25.000</td><td>-€ 75.000</td> </tr>
+                <tr><td class="roi-positive">HW + servizi</td><td>-€ 44.400</td><td>-€ 88.800</td><td>-€ 88.800</td><td>-€ 222.000</td> </tr>
+                <tr><td class="roi-positive">Sviluppo one-time</td><td>-€ 75.000</td><td>€ 0</td><td>€ 0</td><td>-€ 75.000</td> </tr>
+                <tr style="border-top:2px solid #64ffaa;"><td class="roi-positive"><strong>UTILE NETTO</strong></td><td class="profit-negative"><strong>-€ 48.400</strong></td><td class="profit-positive"><strong>+€ 174.200</strong></td><td class="profit-positive"><strong>+€ 366.200</strong></td><td class="profit-positive"><strong>+€ 492.000</strong></td> </tr>
+            </table>
+            <div class="quote">✅ ROI a 36 mesi: <strong class="roi-positive">+556%</strong> | Break-even: 10 mesi</div>
+        </div>
+
+        <!-- SLIDE 16 - RIEPILOGO ROI -->
+        <div class="slide">
+            <div class="slide-number">16/17</div>
+            <h2>📊 RIEPILOGO - ROI per Scenario</h2>
+            <table class="profit-table">
+                <tr><th>Piano</th><th>Store</th><th>Investimento</th><th>Utile 36 mesi</th><th>ROI</th><th>Break-even</th> </tr>
+                <tr><td class="roi-positive">Standard</td><td>20</td><td>€ 205k</td><td class="profit-positive">+€ 121k</td><td class="profit-positive">+167%</td><td>18 mesi</td> </tr>
+                <tr><td class="roi-positive">Standard</td><td>50</td><td>€ 300k</td><td class="profit-positive">+€ 276k</td><td class="profit-positive">+346%</td><td>14 mesi</td> </tr>
+                <tr><td class="roi-positive">Premium</td><td>20</td><td>€ 205k</td><td class="profit-positive">+€ 241k</td><td class="profit-positive">+432%</td><td>12 mesi</td> </tr>
+                <tr><td class="roi-positive">Premium</td><td>50</td><td>€ 300k</td><td class="profit-positive">+€ 492k</td><td class="profit-positive">+556%</td><td>10 mesi</td> </tr>
+            </table>
+            <div class="investment-card" style="margin-top:20px;">
+                <h3>🎯 Punti Chiave</h3>
+                <ul>
+                    <li>✅ Investimento necessario: € 280.000</li>
+                    <li>✅ Costo per store: € 4.440</li>
+                    <li>✅ Costi fissi mensili: € 5.583</li>
+                    <li>✅ Break-even: 10-18 mesi</li>
+                    <li>✅ ROI: +167% a +556%</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 17 - CALL TO ACTION -->
+        <div class="slide">
+            <div class="slide-number">17/17</div>
+            <div style="text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 20px;">🤝</div>
+                <h2>Investi nel Futuro del Retail</h2>
+                <p style="font-size: 1.1rem; max-width: 600px; margin: 20px auto;">Cerchiamo investitori per scalare il modello di noleggio e portare Smart Mirror nei migliori store retail.</p>
+                <div class="investment-card" style="margin: 20px auto; max-width: 400px;">
+                    <div class="big-number">€ 280k</div>
+                    <div>Investimento richiesto</div>
+                    <div class="roi-positive">ROI previsto: +167% a +556% in 36 mesi</div>
+                </div>
+                <div class="grid-2" style="max-width: 500px; margin: 0 auto;">
+                    <div class="info-card">
+                        <div class="icon">📧</div>
+                        <div>invest@smartmirror.com</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="icon">📞</div>
+                        <div>+39 02 1234567</div>
+                    </div>
+                </div>
+                <div class="cta-button" onclick="alert('Grazie per l\'interesse! Riceverai il pitch deck completo entro 24 ore.')">
+                    Richiedi il Pitch Deck Completo →
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Smart Mirror Project | Modello Noleggio SaaS | Dati basati su ricerche di mercato 2025-2026</p>
+        </div>
+    </div>
+</body>
+</html>

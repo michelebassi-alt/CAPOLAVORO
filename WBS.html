@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Mirror Project</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #fff, #64ffda);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: #a0a0a0;
+            border-bottom: 2px solid #64ffda;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+
+        .date-badge {
+            margin-top: 20px;
+            display: inline-flex;
+            gap: 20px;
+            background: rgba(100, 255, 218, 0.1);
+            padding: 10px 25px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+        }
+
+        .date-badge span {
+            color: #64ffda;
+            font-weight: bold;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(100, 255, 218, 0.5);
+        }
+
+        .card h2 {
+            color: #64ffda;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h2 i {
+            font-size: 1.5rem;
+        }
+
+        .card h3 {
+            color: #fff;
+            margin: 20px 0 15px 0;
+            font-size: 1.3rem;
+        }
+
+        /* Timeline */
+        .timeline {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #64ffda, #ff6b6b);
+            border-radius: 3px;
+        }
+
+        .timeline-item {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            min-width: 100px;
+        }
+
+        .timeline-date {
+            background: #1a1a2e;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+            border: 1px solid #64ffda;
+        }
+
+        .timeline-title {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* WBS Tree */
+        .wbs-tree {
+            margin: 20px 0;
+        }
+
+        .wbs-level-1 {
+            background: rgba(100, 255, 218, 0.1);
+            border-left: 4px solid #64ffda;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+        }
+
+        .wbs-level-1 > .wbs-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #64ffda;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .wbs-level-2 {
+            margin-left: 30px;
+            margin-top: 10px;
+            padding-left: 15px;
+            border-left: 2px solid rgba(100, 255, 218, 0.3);
+        }
+
+        .wbs-level-2 .wbs-item {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .wbs-level-3 {
+            margin-left: 30px;
+            padding-left: 15px;
+        }
+
+        .wbs-level-3 .wbs-item {
+            padding: 5px 0;
+            font-size: 0.9rem;
+            color: #c0c0c0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .wbs-duration {
+            color: #64ffda;
+            font-size: 0.8rem;
+            background: rgba(100, 255, 218, 0.1);
+            padding: 2px 8px;
+            border-radius: 15px;
+        }
+
+        .toggle-icon {
+            font-size: 0.9rem;
+            transition: transform 0.2s;
+        }
+
+        .collapsed {
+            display: none;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .metric {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #64ffda;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            margin-top: 5px;
+        }
+
+        /* Milestone */
+        .milestone {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(255, 107, 107, 0.05));
+            border-left: 4px solid #ff6b6b;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        /* Phase Table */
+        .phase-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .phase-table th,
+        .phase-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .phase-table th {
+            color: #64ffda;
+            font-weight: bold;
+        }
+
+        .phase-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .phase-duration {
+            color: #64ffda;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #a0a0a0;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .timeline {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .timeline::before {
+                display: none;
+            }
+            .timeline-item {
+                text-align: left;
+                padding-left: 20px;
+                border-left: 2px solid #64ffda;
+            }
+            .wbs-level-2 {
+                margin-left: 15px;
+            }
+            .wbs-level-3 {
+                margin-left: 15px;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+                padding: 20px;
+            }
+            .card {
+                background: white;
+                border: 1px solid #ddd;
+                break-inside: avoid;
+            }
+            .card h2, .wbs-level-1 > .wbs-title {
+                color: #0066cc;
+            }
+            .wbs-duration {
+                background: #f0f0f0;
+                color: #0066cc;
+            }
+            .metric-value {
+                color: #0066cc;
+            }
+            .toggle-icon {
+                display: none;
+            }
+            .collapsed {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🪞 Smart Mirror</h1>
+            <div class="subtitle">Interactive Retail Experience : </div>
+            <div class="date-badge">
+                <div>📅 Inizio: <span>25 Maggio 2026</span></div>
+                <div>🏁 Fine: <span>20 Luglio 2026</span></div>
+                <div>⏱️ Durata: <span>8 settimane / 40 giorni</span></div>
+            </div>
+        </div>
+
+        <!-- Executive Summary -->
+        <div class="card">
+            <h2>📊 Executive Summary</h2>
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="metric-value">40</div>
+                    <div class="metric-label">Giorni Lavorativi</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">8</div>
+                    <div class="metric-label">Settimane</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">~180</div>
+                    <div class="metric-label">Task Dettagliate</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">4</div>
+                    <div class="metric-label">Risorse Chiave</div>
+                </div>
+            </div>
+            <p style="margin-top: 15px;" align="center">Il progetto prevede la realizzazione di uno <strong>Smart Mirror interattivo</strong>, che integra computer vision, raccomandazione prodotti e interfaccia specchio semi-riflettente.</p>
+        </div>
+
+        <!-- Timeline Visiva -->
+        <div class="card">
+            <h2>📅 Timeline di Massima</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">25-29 Mag</div>
+                    <div class="timeline-title">📋 Analisi</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">1-12 Giu</div>
+                    <div class="timeline-title">✏️ Progettazione</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">15-26 Giu</div>
+                    <div class="timeline-title">📦 Acquisti</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">15 Giu-3 Lug</div>
+                    <div class="timeline-title">💻 Sviluppo SW</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">29 Giu-7 Lug</div>
+                    <div class="timeline-title">🔧 Assemblaggio</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">8-13 Lug</div>
+                    <div class="timeline-title">🔄 Integrazione</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">14-17 Lug</div>
+                    <div class="timeline-title">🧪 Testing</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">20 Lug</div>
+                    <div class="timeline-title">🚀 Go-Live</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Work Breakdown Structure (WBS) -->
+        <div class="card">
+            <h2>📂 Work Breakdown Structure (WBS)</h2>
+            <p style="margin-bottom: 15px; color: #a0a0a0;">Clicca sulle sezioni principali per espandere/contrarre i dettagli</p>
+            <div class="wbs-tree" id="wbsTree">
+                <!-- Fase 1 - Analisi -->
+                <div class="wbs-level-1">
+                    <div class="wbs-title" onclick="toggleWBS(this)">
+                        <span>📋 1. Analisi dei Requisiti</span>
+                        <span class="wbs-duration toggle-icon">▼ 5 giorni</span>
+                    </div>
+                    <div class="wbs-level-2 wbs-content">
+                        <div class="wbs-item">
+                            <span>1.1 Stakeholder analysis</span>
+                            <span class="wbs-duration">1 giorno</span>
+                        </div>
+                        <div class="wbs-item">
+                            <span>1.2 Analisi requisiti funzionali</span>
+                            <span class="wbs-duration">2 giorni</span>
+                        </div>
+                        <div class="wbs-item">
+                            <span>1.3 GDPR & privacy analysis</span>
+                            <span class="wbs-duration">2 giorni</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fase 2 - Progettazione -->
+                <div class="wbs-level-1">
+                    <div class="wbs-title" onclick="toggleWBS(this)">
+                        <span>✏️ 2. Progettazione (HW + SW in parallelo)</span>
+                        <span class="wbs-duration toggle-icon">▼ 10 giorni</span>
+                    </div>
+                    <div class="wbs-level-2 wbs-content">
+                        <div class="wbs-item"><strong>2.1 Progettazione Hardware</strong><span class="wbs-duration">7 giorni</span></div>
+                        <div class="wbs-level-3">
+                            <div class="wbs-item"><span>2.1.1 Scelta display semi-riflettente</span><span class="wbs-duration">1.5 gg</span></div>
+                            <div class="wbs-item"><span>2.1.2 Selezione unità di calcolo</span><span class="wbs-duration">1 gg</span></div>
+                            <div class="wbs-item"><span>2.1.3 Integrazione camera RGB/depth</span><span class="wbs-duration">1 gg</span></div>
+                            <div class="wbs-item"><span>2.1.4 Sensori opzionali</span><span class="wbs-duration">0.5 gg</span></div>
+                            <div class="wbs-item"><span>2.1.5 Sistema audio</span><span class="wbs-duration">0.5 gg</span></div>
+                            <div class="wbs-item"><span>2.1.6 Gestione alimentazione e cablaggio</span><span class="wbs-duration">1 gg</span></div>
+                            <div class="wbs-item"><span>2.1.7 Struttura fisica (frame)</span><span class="wbs-duration">1.5 gg</span></div>
+                        </div>
+                        <div class="wbs-item" style="margin-top: 10px;"><strong>2.2 Progettazione Software</strong><span class="wbs-duration">12 giorni (in parallelo)</span></div>
+                        <div class="wbs-level-3">
+                            <div class="wbs-item"><span>2.2.1 Architettura modulare</span><span class="wbs-duration">2 gg</span></div>
+                            <div class="wbs-item"><span>2.2.2 Pipeline Computer Vision</span><span class="wbs-duration">2 gg</span></div>
+                            <div class="wbs-item"><span>2.2.3 Motore di raccomandazione</span><span class="wbs-duration">2 gg</span></div>
+                            <div class="wbs-item"><span>2.2.4 UI/UX overlay specchio</span><span class="wbs-duration">2 gg</span></div>
+                            <div class="wbs-item"><span>2.2.5 Gestione input (touch/gesture/voce)</span><span class="wbs-duration">1.5 gg</span></div>
+                            <div class="wbs-item"><span>2.2.6 Integrazione API catalogo</span><span class="wbs-duration">1.5 gg</span></div>
+                            <div class="wbs-item"><span>2.2.7 Database utenti e preferenze</span><span class="wbs-duration">1 gg</span></div>
+                        </div>
+                        <div class="wbs-item" style="margin-top: 10px;"><strong>2.3 Progettazione Integrazione HW-SW</strong><span class="wbs-duration">9 giorni</span></div>
+                        <div class="wbs-level-3">
+                            <div class="wbs-item"><span>2.3.1 Comunicazione camera → AI → UI</span><span class="wbs-duration">2 gg</span></div>
+                            <div class="wbs-item"><span>2.3.2 Sincronizzazione real-time</span><span class="wbs-duration">2 gg</span></div>
+                            <div class="wbs-item"><span>2.3.3 Ottimizzazione performance edge</span><span class="wbs-duration">2 gg</span></div>
+                            <div class="wbs-item"><span>2.3.4 Gestione avvio automatico</span><span class="wbs-duration">1 gg</span></div>
+                            <div class="wbs-item"><span>2.3.5 Sicurezza GDPR (anonimizzazione)</span><span class="wbs-duration">2 gg</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fase 3 - Acquisti -->
+                <div class="wbs-level-1">
+                    <div class="wbs-title" onclick="toggleWBS(this)">
+                        <span>📦 3. Acquisti e Logistica</span>
+                        <span class="wbs-duration toggle-icon">▼ 10 giorni</span>
+                    </div>
+                    <div class="wbs-level-2 wbs-content">
+                        <div class="wbs-item"><span>3.1 Selezione componenti HW finali</span><span class="wbs-duration">1 gg</span></div>
+                        <div class="wbs-item"><span>3.2 Richiesta preventivi e approvazione</span><span class="wbs-duration">2 gg</span></div>
+                        <div class="wbs-item"><span>3.3 Effettuazione ordini</span><span class="wbs-duration">1 gg</span></div>
+                        <div class="wbs-item"><span>3.4 Attesa consegna componenti</span><span class="wbs-duration">5 gg</span></div>
+                        <div class="wbs-item"><span>3.5 Ricezione e verifica materiali</span><span class="wbs-duration">1 gg</span></div>
+                        <div class="wbs-item"><span>3.6 Controllo qualità e conformità</span><span class="wbs-duration">1 gg</span></div>
+                    </div>
+                </div>
+
+                <!-- Fase 4 - Sviluppo Software -->
+                <div class="wbs-level-1">
+                    <div class="wbs-title" onclick="toggleWBS(this)">
+                        <span>💻 4. Sviluppo Software</span>
+                        <span class="wbs-duration toggle-icon">▼ 15 giorni</span>
+                    </div>
+                    <div class="wbs-level-2 wbs-content">
+                        <div class="wbs-item"><strong>4.1 Preparazione ambiente</strong><span class="wbs-duration">3 gg</span></div>
+                        <div class="wbs-level-3">
+                            <div class="wbs-item"><span>Setup ambiente di sviluppo</span><span class="wbs-duration">1 gg</span></div>
+                            <div class="wbs-item"><span>Scelta framework e librerie AI</span><span class="wbs-duration">1 gg</span></div>
+                            <div class="wbs-item"><span>Configurazione repository</span><span class="wbs-duration">1 gg</span></div>
+                        </div>
+                        <div class="wbs-item" style="margin-top: 10px;"><strong>4.2 Sviluppo Moduli</strong><span class="wbs-duration">12 gg (parallelo)</span></div>
+                        <div class="wbs-level-3">
+                            <div class="wbs-item"><span>UI/UX Overlay e layout</span><span class="wbs-duration">4 gg</span></div>
+                            <div class="wbs-item"><span>Computer Vision (rilevamento, tracking)</span><span class="wbs-duration">4 gg</span></div>
+                            <div class="wbs-item"><span>Motore di raccomandazione</span><span class="wbs-duration">4 gg</span></div>
+                            <div class="wbs-item"><span>Gestione input (touch/gesture/voce)</span><span class="wbs-duration">3 gg</span></div>
+                            <div class="wbs-item"><span>Integrazione API catalogo</span><span class="wbs-duration">4 gg</span></div>
+                            <div class="wbs-item"><span>Database utenti e preferenze</span><span class="wbs-duration">3 gg</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fase 5 - Assemblaggio Hardware -->
+                <div class="wbs-level-1">
+                    <div class="wbs-title" onclick="toggleWBS(this)">
+                        <span>🔧 5. Assemblaggio Hardware</span>
+                        <span class="wbs-duration toggle-icon">▼ 7 giorni</span>
+                    </div>
+                    <div class="wbs-level-2 wbs-content">
+                        <div class="wbs-item"><span>5.1 Preparazione area e strumenti</span><span class="wbs-duration">0.5 gg</span></div>
+                        <div class="wbs-item"><span>5.2 Organizzazione componenti</span><span class="wbs-duration">0.5 gg</span></div>
+                        <div class="wbs-item"><span>5.3 Montaggio monitor + specchio</span><span class="wbs-duration">1 gg</span></div>
+                        <div class="wbs-item"><span>5.4 Installazione unità di calcolo</span><span class="wbs-duration">1 gg</span></div>
+                        <div class="wbs-item"><span>5.5 Cablaggio completo sistema</span><span class="wbs-duration">1.5 gg</span></div>
+                        <div class="wbs-item"><span>5.6 Integrazione camera</span><span class="wbs-duration">1 gg</span></div>
+                        <div class="wbs-item"><span>5.7 Collegamento sensori e audio</span><span class="wbs-duration">1 gg</span></div>
+                        <div class="wbs-item"><span>5.8 Inserimento nel frame e chiusura</span><span class="wbs-duration">2 gg</span></div>
+                    </div>
+                </div>
+
+                <!-- Fase 6 - Integrazione -->
+                <div class="wbs-level-1">
+                    <div class="wbs-title" onclick="toggleWBS(this)">
+                        <span>🔄 6. Integrazione HW-SW</span>
+                        <span class="wbs-duration toggle-icon">▼ 4 giorni</span>
+                    </div>
+                    <div class="wbs-level-2 wbs-content">
+                        <div class="wbs-item"><span>6.1 Inizio integrazione</span><span class="wbs-duration">1 gg</span></div>
+                        <div class="wbs-item"><span>6.2 Collegamento UI → AI → backend</span><span class="wbs-duration">2 gg</span></div>
+                        <div class="wbs-item"><span>6.3 Gestione flusso dati</span><span class="wbs-duration">1 gg</span></div>
+                        <div class="wbs-item"><span>6.4 Sincronizzazione real-time</span><span class="wbs-duration">1 gg</span></div>
+                        <div class="wbs-item"><span>6.5 Gestione errori e logging</span><span class="wbs-duration">1 gg</span></div>
+                    </div>
+                </div>
+
+                <!-- Fase 7 - Testing -->
+                <div class="wbs-level-1">
+                    <div class="wbs-title" onclick="toggleWBS(this)">
+                        <span>🧪 7. Testing e Qualità</span>
+                        <span class="wbs-duration toggle-icon">▼ 4 giorni</span>
+                    </div>
+                    <div class="wbs-level-2 wbs-content">
+                        <div class="wbs-item"><strong>7.1 Test Hardware</strong><span class="wbs-duration">parallelo</span></div>
+                        <div class="wbs-level-3">
+                            <div class="wbs-item"><span>Display, unità di calcolo, camera, audio, alimentazione, struttura</span><span class="wbs-duration">3 gg</span></div>
+                        </div>
+                        <div class="wbs-item" style="margin-top: 10px;"><strong>7.2 Test Software</strong><span class="wbs-duration">parallelo</span></div>
+                        <div class="wbs-level-3">
+                            <div class="wbs-item"><span>UI/UX, Computer Vision, Motore raccomandazione, API, Database, Input</span><span class="wbs-duration">3 gg</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fase 8 - Deploy e Chiusura -->
+                <div class="wbs-level-1">
+                    <div class="wbs-title" onclick="toggleWBS(this)">
+                        <span>🚀 8. Deploy e Go-Live</span>
+                        <span class="wbs-duration toggle-icon">▼ 1 giorno (simbolico)</span>
+                    </div>
+                    <div class="wbs-level-2 wbs-content">
+                        <div class="wbs-item"><span>8.1 Applicazione ultimi fix</span><span class="wbs-duration">incluso</span></div>
+                        <div class="wbs-item"><span>8.2 Backup configurazione</span><span class="wbs-duration">incluso</span></div>
+                        <div class="wbs-item"><span>8.3 Avvio release stabile</span><span class="wbs-duration">20/07</span></div>
+                        <div class="wbs-item"><span>8.4 Apertura al pubblico (GO-LIVE)</span><span class="wbs-duration">20/07</span></div>
+                        <div class="wbs-item"><span>8.5 Supporto post go-live (48h)</span><span class="wbs-duration">incluso</span></div>
+                        <div class="wbs-item"><span>8.6 Formazione personale</span><span class="wbs-duration">incluso</span></div>
+                        <div class="wbs-item"><span>8.7 Chiusura progetto e report finale</span><span class="wbs-duration">incluso</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dettaglio Fasi e Tempi -->
+        <div class="card">
+            <h2>📋 Dettaglio Fasi e Tempi Realistici</h2>
+            <table class="phase-table">
+                <thead>
+                    <tr>
+                        <th>Fase</th>
+                        <th>Periodo</th>
+                        <th>Durata</th>
+                        <th>Note</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1. Analisi requisiti</td><td>25-29 Maggio</td><td class="phase-duration">5 gg</td><td>Incluso GDPR</td></tr>
+                    <tr><td>2. Progettazione (HW+SW)</td><td>1-12 Giugno</td><td class="phase-duration">10 gg</td><td>Lavoro in parallelo</td></tr>
+                    <tr><td>3. Acquisti e logistica</td><td>15-26 Giugno</td><td class="phase-duration">10 gg</td><td><strong>Collo di bottiglia</strong> - dipende dai fornitori</td></tr>
+                    <tr><td>4. Sviluppo software</td><td>15 Giugno - 3 Luglio</td><td class="phase-duration">15 gg</td><td>In parallelo agli acquisti</td></tr>
+                    <tr><td>5. Assemblaggio hardware</td><td>29 Giugno - 7 Luglio</td><td class="phase-duration">7 gg</td><td>Solo dopo ricezione materiali</td></tr>
+                    <tr><td>6. Integrazione HW-SW</td><td>8-13 Luglio</td><td class="phase-duration">4 gg</td><td>Fase critica</td></tr>
+                    <tr><td>7. Testing e qualità</td><td>14-17 Luglio</td><td class="phase-duration">4 gg</td><td>HW e SW in parallelo</td></tr>
+                    <tr><td>8. Deploy e Go-Live</td><td>20 Luglio</td><td class="phase-duration">1 gg</td><td>Rilascio finale</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Milestone -->
+        <div class="card">
+            <h2>🎯 Milestone Fondamentali</h2>
+            <div class="milestone">
+                <strong>📅 29 Maggio 2026</strong> - Fine Analisi e Approvazione requisiti<br>
+                <strong>📅 12 Giugno 2026</strong> - Progettazione completata<br>
+                <strong>📅 26 Giugno 2026</strong> - Ricezione componenti HW<br>
+                <strong>📅 3 Luglio 2026</strong> - Sviluppo SW completato<br>
+                <strong>📅 7 Luglio 2026</strong> - Assemblaggio HW completato<br>
+                <strong>📅 13 Luglio 2026</strong> - Integrazione completata<br>
+                <strong>📅 17 Luglio 2026</strong> - Testing superato<br>
+                <strong>📅 20 Luglio 2026</strong> - 🚀 GO-LIVE 🚀
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Smart Mirror <br>
+                Michele Bassi - Timur Casini</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleWBS(element) {
+            const parent = element.closest('.wbs-level-1');
+            const content = parent.querySelector('.wbs-content');
+            const icon = element.querySelector('.toggle-icon');
+            
+            if (content.classList.contains('collapsed')) {
+                content.classList.remove('collapsed');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.classList.add('collapsed');
+                icon.style.transform = 'rotate(-90deg)';
+            }
+        }
+        
+        // Initialize all WBS sections as expanded
+        document.querySelectorAll('.wbs-content').forEach(content => {
+            content.classList.remove('collapsed');
+        });
+    </script>
+</body>
+</html>
