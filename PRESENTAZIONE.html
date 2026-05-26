@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Mirror | La nuova esperienza retail</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 100%);
+            color: #f0f0f0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 70% 30%, rgba(100, 255, 218, 0.08), transparent 60%);
+            pointer-events: none;
+        }
+
+        .hero-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            background: linear-gradient(135deg, #ffffff, #64ffda, #a8ff78);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            max-width: 800px;
+        }
+
+        .hero .tagline {
+            font-size: 1.3rem;
+            color: #ccc;
+            max-width: 600px;
+            margin-bottom: 30px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(100, 255, 218, 0.15);
+            border: 1px solid rgba(100, 255, 218, 0.3);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            margin-bottom: 30px;
+        }
+
+        /* Sezioni */
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .section-title span {
+            background: linear-gradient(135deg, #64ffda, #4a90e2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #64ffda, transparent);
+            border-radius: 3px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            align-items: center;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 35px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(100, 255, 218, 0.3);
+            background: rgba(100, 255, 218, 0.03);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #64ffda;
+        }
+
+        .card p {
+            color: #b0b0b0;
+            line-height: 1.6;
+        }
+
+        .quote {
+            font-size: 1.3rem;
+            font-style: italic;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #ddd;
+            border-left: 4px solid #64ffda;
+            padding-left: 30px;
+        }
+
+        .vision-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #ccc;
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, rgba(100, 255, 218, 0.05), rgba(74, 144, 226, 0.05));
+            border-radius: 40px;
+            margin: 40px 20px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #64ffda, #4a90e2);
+            color: #1a1a2e;
+            padding: 16px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 30px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(100, 255, 218, 0.3);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 900px) {
+            .hero h1 { font-size: 2.5rem; }
+            .grid-2 { grid-template-columns: 1fr; gap: 30px; }
+            .grid-3 { grid-template-columns: 1fr; }
+            .section-title { font-size: 1.8rem; }
+            .quote { font-size: 1rem; padding-left: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- HERO SECTION -->
+    <div class="hero">
+        <div class="hero-icon">🪞</div>
+        <div class="hero-badge">✨ La nuova frontiera del retail interattivo</div>
+        <h1>Smart Mirror</h1>
+        <div class="tagline">
+            Uno specchio che conosce il cliente.<br>
+            Lo ascolta. Lo guida. Lo fa sentire unico.
+        </div>
+    </div>
+
+    <!-- SEZIONE 1 - COS'È -->
+    <div class="section">
+        <div class="grid-2">
+            <div>
+                <div class="card-icon" style="font-size: 3rem;">🪞✨</div>
+                <h2 style="font-size: 1.8rem; margin-bottom: 20px; color: #64ffda;">Cos'è Smart Mirror?</h2>
+                <p style="font-size: 1.1rem; line-height: 1.8; color: #ccc;">
+                    Smart Mirror è uno specchio interattivo pensato per i negozi retail. Sembra uno specchio normale, 
+                    ma quando un cliente si avvicina, prende vita. Lo osserva, lo ascolta e, in tempo reale, 
+                    gli propone i prodotti perfetti per lui. Senza bisogno di cercare. Senza bisogno di chiedere.
+                </p>
+                <p style="font-size: 1.1rem; line-height: 1.8; color: #ccc; margin-top: 20px;">
+                    È come avere un commesso personale, disponibile 24/7, che conosce già i gusti del cliente 
+                    e sa cosa consigliargli.
+                </p>
+            </div>
+            <div class="card" style="text-align: center;">
+                <div style="font-size: 4rem; margin-bottom: 20px;">🖐️👤🗣️</div>
+                <p style="font-size: 1rem;">Touch | Gesture | Voce</p>
+                <p style="margin-top: 15px; color: #64ffda;">Tre modi per interagire. Un'esperienza naturale.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEZIONE 2 - COME FUNZIONA -->
+    <div class="section">
+        <h2 class="section-title">Come <span>funziona</span></h2>
+        <div class="grid-3">
+            <div class="card">
+                <div class="card-icon">👤</div>
+                <h3>Rilevamento</h3>
+                <p>La camera integrata rileva la presenza del cliente, la sua età approssimativa, il sesso e l'umore. Tutto in modo anonimo e nel pieno rispetto della privacy.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🧠</div>
+                <h3>Analisi e AI</h3>
+                <p>L'intelligenza artificiale elabora i dati in tempo reale e identifica i prodotti più adatti al profilo del cliente.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">📱</div>
+                <h3>Raccomandazione</h3>
+                <p>Lo specchio mostra i suggerimenti direttamente sul display, con immagini, prezzi e dettagli. Il cliente può interagire con touch, gesti o voce.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEZIONE 3 - PERCHÉ È SPECIALE -->
+    <div class="section">
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-icon">🎯</div>
+                <h3>Personalizzazione reale</h3>
+                <p>Ogni cliente vede prodotti pensati per lui. Non più listini generici, ma un'esperienza su misura.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">⚡</div>
+                <h3>Decisioni in tempo reale</h3>
+                <p>L'AI lavora sul momento. Il cliente riceve suggerimenti immediati, senza attese, senza cercare.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🛡️</div>
+                <h3>Privacy by design</h3>
+                <p>Le immagini vengono anonimizzate istantaneamente. Nessun dato personale viene memorizzato. Il cliente è sempre al sicuro.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">📊</div>
+                <h3>Dati per il negozio</h3>
+                <p>Il retailer riceve report aggregati su prodotti più visti, tempi di interazione e preferenze dei clienti. Per migliorare continuamente.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEZIONE 4 - PERCHÉ IL RETAIL NE HA BISOGNO -->
+    <div class="section">
+        <h2 class="section-title">Perché il <span>retail</span> ne ha bisogno</h2>
+        <div class="quote">
+            "Oggi i negozi hanno un problema: i clienti entrano, guardano, ma spesso se ne vanno senza comprare. 
+            Non perché i prodotti non siano giusti, ma perché nessuno li ha aiutati a scegliere."
+        </div>
+        <div class="grid-3" style="margin-top: 50px;">
+            <div class="card" style="text-align: center;">
+                <div style="font-size: 2rem;">📉</div>
+                <p style="margin-top: 15px;">Bassa interazione in-store</p>
+            </div>
+            <div class="card" style="text-align: center;">
+                <div style="font-size: 2rem;">💰</div>
+                <p style="margin-top: 15px;">Personale costoso e limitato</p>
+            </div>
+            <div class="card" style="text-align: center;">
+                <div style="font-size: 2rem;">🎯</div>
+                <p style="margin-top: 15px;">Difficoltà nel cross-selling</p>
+            </div>
+        </div>
+        <div class="vision-text" style="margin-top: 40px;">
+            Smart Mirror risolve tutto questo. Trasforma ogni cliente in un'esperienza unica, aumenta le vendite e 
+            restituisce al retailer dati preziosi per migliorare il business.
+        </div>
+    </div>
+
+    <!-- SEZIONE 5 - MODELLO DI BUSINESS (SENZA NUMERI) -->
+    <div class="section">
+        <h2 class="section-title">Un modello <span>pensato per crescere</span></h2>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-icon">🔄</div>
+                <h3>Noleggio mensile</h3>
+                <p>Il retailer non compra lo specchio. Lo noleggia con un canone mensile. Nessun investimento iniziale. Zero rischi.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🔧</div>
+                <h3>Manutenzione inclusa</h3>
+                <p>Ci occupiamo noi di tutto: aggiornamenti software, assistenza, riparazioni. Il cliente pensa solo a vendere.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">📈</div>
+                <h3>Sempre aggiornato</h3>
+                <p>L'AI migliora continuamente. Nuove feature, nuovi algoritmi. Lo specchio diventa più intelligente nel tempo.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🌍</div>
+                <h3>Scalabile ovunque</h3>
+                <p>Un negozio o mille. Il modello è pensato per crescere senza limiti, in Italia e nel mondo.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEZIONE 6 - VISIONE -->
+    <div class="section">
+        <h2 class="section-title">La nostra <span>visione</span></h2>
+        <div class="quote" style="border-left-color: #ff6b6b;">
+            "Vogliamo cambiare il modo in cui le persone fanno shopping. Rendere ogni negozio più intelligente, 
+            ogni cliente più felice, ogni acquisto più personale. Smart Mirror non è solo uno specchio. 
+            È il futuro del retail."
+        </div>
+        <div style="text-align: center; margin-top: 40px;">
+            <div style="display: inline-block; background: rgba(255,255,255,0.03); border-radius: 20px; padding: 20px 40px;">
+                <p style="color: #64ffda; font-size: 1.2rem;">🚀 Pronti a cambiare il retail</p>
+                <p style="color: #aaa;">Un team, una tecnologia, una visione</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CALL TO ACTION -->
+    <div class="cta-section">
+        <div style="font-size: 3rem; margin-bottom: 20px;">🤝</div>
+        <h2 style="font-size: 2rem; margin-bottom: 20px;">Investi nel futuro del retail</h2>
+        <p style="max-width: 500px; margin: 0 auto; color: #ccc;">
+            Cerchiamo partner che credano in questa visione. Per portare Smart Mirror nei migliori store retail d'Europa.
+        </p>
+        <div>
+            <div class="cta-button" onclick="alert('Grazie per l\'interesse! Ti contatteremo a breve per fissare un incontro.')">
+                📧 Contattaci per saperne di più →
+            </div>
+        </div>
+        <div style="margin-top: 30px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+            <div>📞 +39 02 1234567</div>
+            <div>📧 invest@smartmirror.com</div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <p>Smart Mirror – Michele Bassi</p>
+        <p style="font-size: 0.7rem;">Un progetto pensato per il retail del futuro</p>
+    </div>
+</body>
+</html>
